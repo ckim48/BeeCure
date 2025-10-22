@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- === Head === -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · Modal Samples</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="static/styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- === Navbar === -->
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <div class="nav-logo">
+        <img src="assets/logo_nobg.png" alt="BeeHive Logo">
+      </div>
+      <span class="brand-name">BeeCure</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="fordetect.html">Inspect</a></li>
+        <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
+        <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
+      </ul>
+
+      <!-- Auth buttons -->
+      <div class="d-flex ms-lg-3">
+        <!-- Show one of these based on auth state -->
+        <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <!-- === Page === -->
+  <main class="page">
+    <section class="py-4 py-md-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xl-10">
+            <div class="card-soft p-4 p-md-5">
+              <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+                <div>
+                  <h1 class="h4 fw-bold mb-1">Modal Components</h1>
+                </div>
+              </div>
+
+              <div class="btn-grid d-flex flex-wrap gap-2">
+                <button class="btn-bee" data-bs-toggle="modal" data-bs-target="#modalDetectResult">Open “Detection Result”</button>
+                <button class="btn-ghost" data-bs-toggle="modal" data-bs-target="#modalApiaryDetail">Open “Apiary Detail”</button>
+                <button class="btn-bee" data-bs-toggle="modal" data-bs-target="#modalAddApiary">Open “Add Apiary”</button>
+                <button class="btn btn-outline-danger rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#modalConfirmDelete">Open “Confirm Delete”</button>
+              </div>
+
+
+            </div><!-- /card -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- === Detection Result Modal === -->
+  <div class="modal fade" id="modalDetectResult" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Detection Result</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="chip bad">Likely infected</span>
+            <span class="small text-muted">Confidence 86.0%</span>
+          </div>
+          <div class="small text-muted mb-2">Estimated objects: 3 region(s)</div>
+          <p class="mb-0">Mite-like regions detected near the thorax and abdomen. Consider a sugar roll or alcohol wash to confirm and plan treatment.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="afterdetect.html" class="btn-ghost">View Full Report</a>
+          <button class="btn-bee" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Apiary Detail Modal === -->
+  <div class="modal fade" id="modalApiaryDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Sunrise Yard</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="chip ok">Low Risk</span>
+            <span class="small text-muted">Last scan 2025-10-20</span>
+          </div>
+          <div class="small text-muted mb-2">37.57960, 126.97700</div>
+          <p class="mb-0">12 hives. Brood pattern strong, queens marked in spring. No mites observed last inspection. Next routine check in 7 days.</p>
+        </div>
+        <div class="modal-footer">
+          <a href="apiary-map.html" class="btn-ghost">Open on Map</a>
+          <button class="btn-bee" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Add Apiary Modal === -->
+  <div class="modal fade" id="modalAddApiary" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Add Apiary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Name</label>
+              <input type="text" class="form-control" placeholder="e.g., Riverside Apiary">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Latitude</label>
+              <input type="text" class="form-control" placeholder="37.5665">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Longitude</label>
+              <input type="text" class="form-control" placeholder="126.9780">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Notes</label>
+              <textarea class="form-control" rows="3" placeholder="Hive count, queen status, last inspection..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Risk</label>
+              <select class="form-select">
+                <option selected>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+          </form>
+          <div class="small text-muted mt-2">This is a mock form and does not persist data.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-bee" disabled>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Confirm Delete Modal === -->
+  <div class="modal fade" id="modalConfirmDelete" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold text-danger">Delete Detection?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">You’re about to delete this detection record. This action cannot be undone.</p>
+          <ul class="small text-muted mb-0 ps-3">
+            <li>Captured: 2025-10-20 14:20</li>
+            <li>Apiary: Sunrise Yard</li>
+            <li>Status: Infected (86%)</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger rounded-pill fw-bold" disabled>Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Scripts === -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

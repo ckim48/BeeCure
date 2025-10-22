@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · Varroa Detection (Front-end Template)</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+
+  <!-- Bootstrap & Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<link href="static/styles.css" rel="stylesheet">
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <div class="nav-logo">
+        <img src="assets/logo_nobg.png" alt="BeeHive Logo">
+      </div>
+      <span class="brand-name">BeeCure</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="fordetect.html">Inspect</a></li>
+        <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
+        <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
+      </ul>
+
+      <!-- Auth buttons -->
+      <div class="d-flex ms-lg-3">
+        <!-- Show one of these based on auth state -->
+        <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+  <main class="page">
+    <section class="py-4 py-md-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-10 col-xl-9">
+            <div class="card-soft p-4 p-md-5">
+              <div class="row g-4 align-items-start">
+                <div class="col-12">
+                  <h1 class="h3 fw-bold mb-1">Check a Photo for Varroa Risk</h1>
+                  <p class="text-muted mb-3">Front-end only demo — add your API call in <code>analyzeImage()</code>. Supported: <strong>JPG/PNG/HEIC</strong>.
+                  </p>
+                </div>
+
+                <!-- Upload / Preview column -->
+                <div class="col-12 col-md-7">
+                  <!-- Dropzone -->
+                  <label class="drop" id="drop">
+                    <input id="file" type="file" accept="image/*" />
+                    <div class="hint">
+                      <div class="mb-2">Drag & drop a bee photo here, or</div>
+                      <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <button class="btn btn-ghost btn-sm" type="button" id="chooseBtn">Choose Image</button>
+                        <button class="btn btn-bee btn-sm" type="button" id="cameraBtn">Take Photo</button>
+                      </div>
+                      <div class="small mt-2">Tip: a close, sharp frame of bees or brood works best.</div>
+                    </div>
+                  </label>
+
+                  <!-- Preview -->
+                  <div class="preview-wrap mt-3" id="previewWrap" hidden>
+                    <img id="preview" class="preview" alt="Preview" />
+                    <canvas id="heat" class="overlay-heat"></canvas>
+                  </div>
+
+                  <!-- Controls -->
+                  <div class="d-flex gap-2 mt-3">
+                    <button class="btn-bee" id="btnAnalyze" disabled>Analyze Photo</button>
+                    <button class="btn-ghost" id="btnClear" disabled>Clear</button>
+                    <div class="form-check ms-auto d-none" id="heatToggleWrap">
+                      <input class="form-check-input" type="checkbox" id="toggleHeat" />
+                      <label class="form-check-label" for="toggleHeat">Show heatmap</label>
+                    </div>
+                  </div>
+
+                  <!-- Progress -->
+                  <div class="progress mt-3 d-none" id="prog">
+                    <div class="progress-bar" role="progressbar" style="width:0%"></div>
+                  </div>
+                </div>
+
+                <!-- Result column -->
+                <div class="col-12 col-md-5">
+                  <div class="p-3 rounded-3" style="background:linear-gradient(180deg,#fffef8,#fff) ;border:1px solid rgba(2,6,23,.06)">
+                    <h2 class="h5 fw-bold">Result</h2>
+                    <div id="resultLive" class="mt-2" aria-live="polite">
+                      <p class="text-muted mb-0">Upload a photo and click <strong>Analyze</strong>.</p>
+                    </div>
+                    <hr>
+                    <div class="d-flex flex-column gap-1 small">
+                      <div><strong>Guidelines</strong></div>
+                      <ul class="mb-0 small text-muted">
+                        <li>Good lighting, in-focus subjects.</li>
+                        <li>Include bees or brood clearly in frame.</li>
+                        <li>Minimal motion blur; avoid heavy compression.</li>
+                      </ul>
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-3 mt-4">
+    <small>&copy; 2025 BeeCure · Fight the Mites, Save the Bees</small>
+  </footer>
+
+  <script>
+    // ====== Elements
+    const el = (id)=>document.getElementById(id);
+    const fileInput = el('file');
+    const chooseBtn = el('chooseBtn');
+    const cameraBtn = el('cameraBtn');
+    const drop = el('drop');
+    const previewWrap = el('previewWrap');
+    const img = el('preview');
+    const heat = el('heat');
+    const btnAnalyze = el('btnAnalyze');
+    const btnClear = el('btnClear');
+    const prog = el('prog');
+    const progBar = prog.querySelector('.progress-bar');
+    const resultLive = el('resultLive');
+    const heatToggleWrap = el('heatToggleWrap');
+    const toggleHeat = el('toggleHeat');
+
+    // ====== Choose / Camera buttons
+    chooseBtn.addEventListener('click', () => {
+      fileInput.removeAttribute('capture'); // gallery
+      fileInput.click();
+    });
+    cameraBtn.addEventListener('click', () => {
+      fileInput.setAttribute('capture', 'environment'); // back camera (mobile)
+      fileInput.click();
+    });
+
+    // ====== Drag & drop
+    ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor='var(--bee-yellow)'}));
+    ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor='rgba(243,156,18,.55)'}));
+    drop.addEventListener('drop', e=>{
+      const f = e.dataTransfer.files?.[0];
+      if(f) setFile(f);
+    });
+
+    // ====== File input
+    fileInput.addEventListener('change', e=>{ const f=e.target.files?.[0]; if(f) setFile(f); });
+
+    function setFile(f){
+      if(!f.type.startsWith('image/')){ alert('Please choose an image'); return; }
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        img.src = reader.result; img.style.display='block';
+        previewWrap.hidden = false; btnAnalyze.disabled=false; btnClear.disabled=false;
+        heatToggleWrap.classList.add('d-none');
+        resultLive.innerHTML = '<p class="text-muted mb-0">Ready. Click <strong>Analyze</strong>.</p>';
+        // Prepare canvas size to match preview box dimensions on next paint
+        requestAnimationFrame(()=>{
+          const rect = img.getBoundingClientRect();
+          heat.width = Math.max(1, rect.width);
+          heat.height = Math.max(1, rect.height);
+          drawFakeHeatmap(); // pre-render but keep hidden
+        });
+      };
+      reader.readAsDataURL(f);
+    }
+
+    // ====== Clear
+    btnClear.addEventListener('click', ()=>{
+      fileInput.value=''; img.removeAttribute('src'); img.style.display='none';
+      previewWrap.hidden = true; btnAnalyze.disabled=true; btnClear.disabled=true;
+      toggleHeat.checked=false; heat.style.opacity=0; heatToggleWrap.classList.add('d-none');
+      resultLive.innerHTML = '<p class="text-muted mb-0">Upload a photo and click <strong>Analyze</strong>.</p>';
+    });
+
+    // ====== Heat toggle
+    toggleHeat.addEventListener('change', ()=>{
+      heat.style.opacity = toggleHeat.checked ? .9 : 0;
+    });
+
+    // ====== Analyze (mock)
+    btnAnalyze.addEventListener('click', async ()=>{
+      if(!img.src) return;
+      prog.classList.remove('d-none'); progBar.style.width='0%'; animateProgress();
+      const res = await analyzeImage(img);
+      prog.classList.add('d-none'); progBar.style.width='0%';
+
+      const cls = res.infected ? 'bad' : 'ok';
+      const label = res.infected ? 'Likely infected' : 'Unlikely infected';
+      resultLive.innerHTML = `
+        <div class="chip ${cls}">${label}
+          <span class="ms-1 small">(confidence ${(res.confidence*100).toFixed(1)}%)</span>
+        </div>
+        <div class="small text-muted mt-2">Estimated objects: ${res.count} region(s)</div>
+      `;
+
+      drawFakeHeatmap(res.count);
+      heatToggleWrap.classList.remove('d-none');
+      heat.style.opacity = toggleHeat.checked ? .9 : 0;
+    });
+
+    function animateProgress(){
+      let p=0; const id=setInterval(()=>{ p+= Math.random()*18; if(p>=98){p=98; clearInterval(id);} progBar.style.width=p+'%'; }, 150);
+    }
+
+    // Mock analyze: deterministic-ish from image size
+    async function analyzeImage(imgEl){
+      await new Promise(r=>setTimeout(r, 1000 + Math.random()*600)); // simulate latency
+      const w = imgEl.naturalWidth || 1000; const h = imgEl.naturalHeight || 800;
+      const seed = ((w*h)%997)/997; // 0..1
+      const infected = seed>0.45;
+      const confidence = infected ? 0.7 + seed*0.25 : 0.55 + (1-seed)*0.3;
+      const count = Math.max(1, Math.round((seed*5)%6));
+      return { infected, confidence: Math.min(0.99, Math.max(0.5, confidence)), count };
+    }
+
+    // Pretty fake heatmap (demo only)
+    function drawFakeHeatmap(n=3){
+      const ctx = heat.getContext('2d');
+      const {width:w, height:h} = heat;
+      ctx.clearRect(0,0,w,h);
+      const grd = ctx.createLinearGradient(0,0,w,h);
+      grd.addColorStop(0,'rgba(255,0,0,.85)');
+      grd.addColorStop(.5,'rgba(255,165,0,.65)');
+      grd.addColorStop(1,'rgba(255,255,0,.25)');
+      for(let i=0;i<n;i++){
+        const x = Math.random()*w, y=Math.random()*h, r = Math.max(40, Math.min(w,h)/6 * (0.6+Math.random()));
+        const rad = ctx.createRadialGradient(x,y,0,x,y,r);
+        rad.addColorStop(0,'rgba(255,0,0,.7)');
+        rad.addColorStop(1,'rgba(255,0,0,0)');
+        ctx.fillStyle = rad; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+      ctx.globalCompositeOperation='lighter';
+      ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+      ctx.globalCompositeOperation='source-over';
+    }
+  </script>
+</body>
+</html>

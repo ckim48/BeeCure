@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- === Head === -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · Apiary Map</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+  <link href="static/styles.css" rel="stylesheet">
+  <style>
+    /* small helpers for previews */
+    .thumb { width: 140px; height: 90px; object-fit: cover; border-radius: 8px; }
+    .thumb-lg { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <!-- === Navbar === -->
+  <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <div class="nav-logo">
+          <img src="assets/logo_nobg.png" alt="BeeHive Logo">
+        </div>
+        <span class="brand-name">BeeCure</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="fordetect.html">Inspect</a></li>
+          <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
+        </ul>
+
+        <!-- Auth buttons -->
+        <div class="d-flex ms-lg-3">
+          <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- === Page === -->
+  <main class="page">
+
+    <section class="py-2 py-md-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xl-10">
+            <div class="card-soft p-4 p-md-5">
+              <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+                <div>
+                  <h1 class="h4 fw-bold mb-1">Apiary Map</h1>
+                  <div class="text-muted small">Hover a pin for a quick summary · Click for full details</div>
+                </div>
+                <div class="search-wrap">
+                  <input id="searchInput" type="search" class="form-control" placeholder="Search apiaries by name (e.g., Sunrise, Riverside, Hilltop)" />
+                  <button id="searchBtn" class="btn-bee">Search</button>
+                  <button id="clearBtn" class="btn-ghost">Clear</button>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 small text-muted mb-2">
+                <span class="chip ok">Low Risk</span>
+                <span class="chip bad">High Risk</span>
+              </div>
+
+              <div id="map" class="mb-3" style="height:420px;border-radius:12px;"></div>
+
+              <div class="small text-muted">
+                This is a mock template. Data is static; connect your backend to store apiaries, risk scores, and inspection logs.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- === Add Button === -->
+  <button class="btn-bee floating-add" data-bs-toggle="modal" data-bs-target="#addApiaryModal">+ Add Apiary</button>
+
+  <!-- === Detail Modal === -->
+  <div class="modal fade" id="apiaryDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="detailTitle">Apiary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="detailImageWrap" class="mb-3" style="display:none;">
+            <img id="detailImage" class="thumb-lg" alt="Apiary image">
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span id="detailRiskChip" class="chip ok">Low Risk</span>
+            <span class="small text-muted" id="detailRiskNote">Last scan 2025-09-12</span>
+          </div>
+          <div class="small text-muted mb-2" id="detailCoords">Lat, Lng</div>
+          <p class="mb-0" id="detailNotes">Notes about this apiary.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">Close</button>
+          <button class="btn-bee" disabled>Open Log</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Add Modal === -->
+  <div class="modal fade" id="addApiaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Add Apiary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addForm" class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Name</label>
+              <input id="fName" type="text" class="form-control" placeholder="e.g., Sunrise Yard" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Latitude</label>
+              <input id="fLat" type="number" step="any" class="form-control" placeholder="37.5665" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Longitude</label>
+              <input id="fLng" type="number" step="any" class="form-control" placeholder="126.9780" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Notes</label>
+              <textarea id="fNotes" class="form-control" rows="3" placeholder="Hive count, queen status, last inspection..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Risk</label>
+              <select id="fRisk" class="form-select">
+                <option selected>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+
+            <!-- New image field + preview -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">Image (optional)</label>
+              <input id="fImage" type="file" accept="image/*" class="form-control">
+              <div id="fPreviewWrap" class="mt-2" style="display:none;">
+                <img id="fPreview" class="thumb" alt="Preview">
+              </div>
+            </div>
+          </form>
+          <div class="small text-muted mt-2">This form is illustrative only and does not persist data.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button id="btnSave" class="btn-bee" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Scripts === -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
+  <script>
+    // --- MAP INIT ---
+    const map = L.map('map', { scrollWheelZoom:true }).setView([37.5665,126.9780], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:19, attribution:'&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // --- DATA  ---
+    const apiaries = [
+      { name:'Sunrise Yard',   coords:[37.5796,126.9770], risk:'High',   lastScan:'2025-09-18', notes:'7 hives; elevated risk in 2 hives.', image:null },
+      { name:'Riverside Apiary', coords:[37.5512,126.9882], risk:'Low',  lastScan:'2025-09-12', notes:'12 hives; no mites observed.', image:null },
+      { name:'Forest Edge',    coords:[37.5123,127.0234], risk:'Medium', lastScan:'2025-09-10', notes:'9 hives; one weak colony.', image:null },
+      { name:'Hilltop Garden', coords:[37.5410,127.0050], risk:'Low',    lastScan:'2025-09-08', notes:'8 hives; strong brood pattern.', image:null },
+      { name:'Urban Rooftop',  coords:[37.5662,126.9820], risk:'Medium', lastScan:'2025-09-15', notes:'5 hives; watch food stores.', image:null }
+    ];
+
+    // --- HELPERS ---
+    const riskChip = (risk) => `<span class="chip ${risk==='High'?'bad':'ok'}">${risk} Risk</span>`;
+    const group = L.featureGroup().addTo(map);
+    const markers = [];
+
+    function popupHtmlFor(a){
+      const thumb = a.image ? `<div class="mt-2"><img src="${a.image}" class="thumb" alt="thumb"></div>` : '';
+      return `
+        <div class="popup-title">${a.name}</div>
+        <div class="popup-meta">${a.coords[0].toFixed(4)}, ${a.coords[1].toFixed(4)} · Last scan ${a.lastScan}</div>
+        <div class="mt-1">${riskChip(a.risk)}</div>
+        ${thumb}
+      `;
+    }
+
+    function addMarkers(data){
+      group.clearLayers();
+      markers.length = 0;
+      data.forEach(a=>{
+        const m = L.marker(a.coords);
+        m.bindPopup(popupHtmlFor(a), { closeButton:true });
+        m.on('mouseover', ()=> m.openPopup());
+        m.on('click', ()=> openDetail(a));
+        m.addTo(group);
+        markers.push({ marker:m, data:a });
+      });
+      if(data.length > 1){ map.fitBounds(group.getBounds().pad(0.2)); }
+      if(data.length === 1){ map.setView(data[0].coords, 13); }
+    }
+
+    function openDetail(a){
+      document.getElementById('detailTitle').textContent = a.name;
+      const chip = document.getElementById('detailRiskChip');
+      chip.className = 'chip ' + (a.risk==='High'?'bad':'ok');
+      chip.textContent = a.risk + ' Risk';
+      document.getElementById('detailRiskNote').textContent = 'Last scan ' + a.lastScan;
+      document.getElementById('detailCoords').textContent = `${a.coords[0].toFixed(5)}, ${a.coords[1].toFixed(5)}`;
+      document.getElementById('detailNotes').textContent = a.notes || '';
+
+      // image in modal
+      const imgWrap = document.getElementById('detailImageWrap');
+      const img = document.getElementById('detailImage');
+      if (a.image){
+        img.src = a.image;
+        imgWrap.style.display = '';
+      } else {
+        img.src = '';
+        imgWrap.style.display = 'none';
+      }
+
+      new bootstrap.Modal('#apiaryDetailModal').show();
+    }
+
+    function doSearch(){
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      if(!q){ addMarkers(apiaries); return; }
+      const filtered = apiaries.filter(a=> a.name.toLowerCase().includes(q));
+      addMarkers(filtered.length ? filtered : []);
+      if(filtered.length === 0){ alert('No apiaries matched your search.'); }
+    }
+
+    function clearSearch(){
+      document.getElementById('searchInput').value = '';
+      addMarkers(apiaries);
+    }
+
+    // --- ADD FORM: image preview + save  ---
+    let selectedImageDataUrl = null;
+
+    document.getElementById('fImage').addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file){ selectedImageDataUrl = null; document.getElementById('fPreviewWrap').style.display = 'none'; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        selectedImageDataUrl = reader.result;
+        const prev = document.getElementById('fPreview');
+        prev.src = selectedImageDataUrl;
+        document.getElementById('fPreviewWrap').style.display = '';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('btnSave').addEventListener('click', ()=>{
+      const name = document.getElementById('fName').value.trim();
+      const lat  = parseFloat(document.getElementById('fLat').value);
+      const lng  = parseFloat(document.getElementById('fLng').value);
+      const notes = document.getElementById('fNotes').value.trim();
+      const risk  = document.getElementById('fRisk').value;
+
+      if(!name || Number.isNaN(lat) || Number.isNaN(lng)){
+        alert('Please provide a valid name and coordinates.');
+        return;
+      }
+
+      const today = new Date().toISOString().slice(0,10);
+      const entry = {
+        name, coords:[lat, lng], risk,
+        lastScan: today, notes, image: selectedImageDataUrl
+      };
+      apiaries.push(entry);
+      addMarkers(apiaries);
+
+      // reset form 
+      document.getElementById('addForm').reset();
+      selectedImageDataUrl = null;
+      document.getElementById('fPreviewWrap').style.display = 'none';
+
+
+      openDetail(entry);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addApiaryModal'));
+      modal && modal.hide();
+    });
+
+    // --- INIT ---
+    addMarkers(apiaries);
+    document.getElementById('searchBtn').addEventListener('click', doSearch);
+    document.getElementById('clearBtn').addEventListener('click', clearSearch);
+    document.getElementById('searchInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSearch(); } });
+  </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · Detection Statistics (Mock)</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="static/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <div class="nav-logo">
+        <img src="assets/logo_nobg.png" alt="BeeHive Logo">
+      </div>
+      <span class="brand-name">BeeCure</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="fordetect.html">Inspect</a></li>
+        <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
+        <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
+      </ul>
+
+      <!-- Auth buttons -->
+      <div class="d-flex ms-lg-3">
+        <!-- Show one of these based on auth state -->
+        <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <main class="page">
+    <section class="py-4 py-md-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xxl-11">
+            <div class="card-soft p-4 p-md-5">
+              <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+                <div>
+                  <h1 class="h4 fw-bold mb-1">Detection Statistics</h1>
+                  <div class="text-muted small">Weekly, monthly, or view all-time</div>
+                </div>
+                <div class="filters d-flex flex-wrap gap-2">
+                  <select id="apiaryFilter" class="form-select form-select-sm">
+                    <option value="all" selected>All Apiaries</option>
+                    <option>Sunrise Yard</option>
+                    <option>Riverside Apiary</option>
+                    <option>Forest Edge</option>
+                    <option>Hilltop Garden</option>
+                    <option>Urban Rooftop</option>
+                  </select>
+                </div>
+              </div>
+
+              <ul class="nav nav-pills nav-bee" id="statsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="weekly-tab" data-bs-toggle="pill" data-bs-target="#weekly" type="button" role="tab">Weekly</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button" role="tab">Monthly</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="all-tab" data-bs-toggle="pill" data-bs-target="#alltime" type="button" role="tab">All Time</button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="statsTabsContent">
+                <!-- Weekly -->
+                <div class="tab-pane fade show active" id="weekly" role="tabpanel">
+                  <div class="row g-3 g-md-4">
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Total Detects</div><div class="kpi-value" id="wk-total">—</div><div class="kpi-sub" id="wk-sub">vs last week —</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Infected</div><div class="kpi-value" id="wk-inf">—</div><div class="kpi-sub">flagged positive</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Uninfected</div><div class="kpi-value" id="wk-uninf">—</div><div class="kpi-sub">clear results</div></div></div>
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Avg Confidence</div><div class="kpi-value" id="wk-conf">—</div><div class="kpi-sub">across all detects</div></div></div>
+
+                    <div class="col-12 col-xl-7">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Detections per Day (Bar)</div>
+                        <canvas id="barWeekly"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-5">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Confidence Trend (Line)</div>
+                        <canvas id="lineWeekly"></canvas>
+                      </div>
+                    </div>
+
+                    <!-- weekly top 5 -->
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Species (Weekly)</div>
+                        <canvas id="barTopSpeciesW"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Locations (Weekly)</div>
+                        <canvas id="barTopPlacesW"></canvas>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="kpi-card">
+                        <div class="fw-semibold mb-2">History</div>
+                        <div class="table-responsive">
+                          <table class="table align-middle mb-0">
+                            <thead><tr><th>When</th><th>Apiary</th><th>Status</th><th>Confidence</th></tr></thead>
+                            <tbody id="wk-history"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Monthly -->
+                <div class="tab-pane fade" id="monthly" role="tabpanel">
+                  <div class="row g-3 g-md-4">
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Total Detects</div><div class="kpi-value" id="mo-total">—</div><div class="kpi-sub" id="mo-sub">vs last month —</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Infected</div><div class="kpi-value" id="mo-inf">—</div><div class="kpi-sub">flagged positive</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Uninfected</div><div class="kpi-value" id="mo-uninf">—</div><div class="kpi-sub">clear results</div></div></div>
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Avg Confidence</div><div class="kpi-value" id="mo-conf">—</div><div class="kpi-sub">across all detects</div></div></div>
+
+                    <div class="col-12 col-xl-7">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Detections per Week (Bar)</div>
+                        <canvas id="barMonthly"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-5">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Avg Confidence by Week (Line)</div>
+                        <canvas id="lineMonthly"></canvas>
+                      </div>
+                    </div>
+
+                    <!-- monthly top 5 -->
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Species (Monthly)</div>
+                        <canvas id="barTopSpeciesM"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Locations (Monthly)</div>
+                        <canvas id="barTopPlacesM"></canvas>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="kpi-card">
+                        <div class="fw-semibold mb-2">History</div>
+                        <div class="table-responsive">
+                          <table class="table align-middle mb-0">
+                            <thead><tr><th>When</th><th>Apiary</th><th>Status</th><th>Confidence</th></tr></thead>
+                            <tbody id="mo-history"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- All Time -->
+                <div class="tab-pane fade" id="alltime" role="tabpanel">
+                  <div class="row g-3 g-md-4">
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Total Detects</div><div class="kpi-value" id="al-total">—</div><div class="kpi-sub" id="al-sub">since launch</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Infected</div><div class="kpi-value" id="al-inf">—</div><div class="kpi-sub">flagged positive</div></div></div>
+                    <div class="col-6 col-md-3"><div class="kpi-card"><div class="kpi-title">Uninfected</div><div class="kpi-value" id="al-uninf">—</div><div class="kpi-sub">clear results</div></div></div>
+                    <div class="col-12 col-md-3"><div class="kpi-card"><div class="kpi-title">Avg Confidence</div><div class="kpi-value" id="al-conf">—</div><div class="kpi-sub">overall average</div></div></div>
+
+                    <div class="col-12 col-xl-7">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Detections by Month (Bar)</div>
+                        <canvas id="barAll"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-5">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Avg Confidence by Month (Line)</div>
+                        <canvas id="lineAll"></canvas>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Species (All Time)</div>
+                        <canvas id="barTopSpecies"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-12 col-xl-6">
+                      <div class="chart-wrap">
+                        <div class="fw-semibold mb-2">Top 5 Locations (All Time)</div>
+                        <canvas id="barTopPlaces"></canvas>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="kpi-card">
+                        <div class="fw-semibold mb-2">History</div>
+                        <div class="table-responsive">
+                          <table class="table align-middle mb-0">
+                            <thead><tr><th>When</th><th>Apiary</th><th>Status</th><th>Confidence</th></tr></thead>
+                            <tbody id="al-history"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /tab-content -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    /* Data */
+    const weekly = {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      detects: [16,18,22,20,24,15,14],
+      confidence: [0.78,0.81,0.76,0.83,0.80,0.77,0.79],
+      history: [
+        ['2025-10-20 14:20','Sunrise Yard','Infected',0.86],
+        ['2025-10-20 10:05','Riverside Apiary','Uninfected',0.74],
+        ['2025-10-19 18:42','Forest Edge','Infected',0.81],
+        ['2025-10-18 09:12','Hilltop Garden','Uninfected',0.72],
+        ['2025-10-18 08:51','Urban Rooftop','Uninfected',0.69],
+      ],
+      totals: { total:129, inf:58, uninf:71, conf:0.78, delta:'+8% vs last wk' }
+    };
+
+    const monthly = {
+      labels: ['W1','W2','W3','W4'],
+      detects: [84,96,110,103],
+      confidence: [0.77,0.79,0.81,0.80],
+      history: [
+        ['2025-10-17 16:33','Sunrise Yard','Infected',0.88],
+        ['2025-10-15 11:03','Riverside Apiary','Uninfected',0.71],
+        ['2025-10-12 07:55','Forest Edge','Infected',0.83],
+        ['2025-10-09 13:20','Hilltop Garden','Uninfected',0.76],
+      ],
+      totals: { total:393, inf:172, uninf:221, conf:0.79, delta:'+12% vs last mo' }
+    };
+
+    const alltime = {
+      labels: ['May','Jun','Jul','Aug','Sep','Oct'],
+      detects: [210,245,268,301,322,336],
+      confidence: [0.74,0.76,0.77,0.79,0.80,0.81],
+      history: [
+        ['2025-10-20 08:05','Sunrise Yard','Infected',0.87],
+        ['2025-09-14 12:44','Riverside Apiary','Uninfected',0.72],
+        ['2025-08-02 09:27','Forest Edge','Infected',0.80],
+      ],
+      totals: { total:1682, inf:742, uninf:940, conf:0.78, delta:'since launch' }
+    };
+
+    /* Mock rankings */
+    const topSpeciesAll = {
+      labels: ['Apis mellifera','Apis cerana','Bombus terrestris','Melipona beecheii','Apis dorsata'],
+      counts: [312, 274, 203, 167, 129]
+    };
+    const topPlacesAll = {
+      labels: ['Sunrise Yard','Riverside Apiary','Forest Edge','Hilltop Garden','Urban Rooftop'],
+      counts: [188, 176, 149, 132, 117]
+    };
+    const topSpeciesWeek = {
+      labels: ['Apis mellifera','Apis cerana','Bombus terrestris','Apis dorsata','Melipona beecheii'],
+      counts: [62, 55, 41, 28, 25]
+    };
+    const topPlacesWeek = {
+      labels: ['Riverside Apiary','Sunrise Yard','Forest Edge','Urban Rooftop','Hilltop Garden'],
+      counts: [33, 31, 26, 22, 17]
+    };
+    const topSpeciesMonth = {
+      labels: ['Apis mellifera','Apis cerana','Bombus terrestris','Melipona beecheii','Apis dorsata'],
+      counts: [138, 121, 92, 71, 64]
+    };
+    const topPlacesMonth = {
+      labels: ['Sunrise Yard','Forest Edge','Riverside Apiary','Hilltop Garden','Urban Rooftop'],
+      counts: [79, 72, 68, 51, 45]
+    };
+
+    /* Helpers */
+    function fillHistory(tbodyId, rows){
+      const tb = document.getElementById(tbodyId);
+      tb.innerHTML = rows.map(r=>{
+        const statusChip = r[2]==='Infected'
+          ? '<span class="chip bad">Infected</span>'
+          : '<span class="chip ok">Uninfected</span>';
+        return `<tr>
+          <td class="small">${r[0]}</td>
+          <td>${r[1]}</td>
+          <td>${statusChip}</td>
+          <td>${(r[3]*100).toFixed(1)}%</td>
+        </tr>`;
+      }).join('');
+    }
+    function fillKPIs(prefix, totals){
+      document.getElementById(prefix+'-total').textContent = totals.total;
+      document.getElementById(prefix+'-inf').textContent   = totals.inf;
+      document.getElementById(prefix+'-uninf').textContent = totals.uninf;
+      document.getElementById(prefix+'-conf').textContent  = (totals.conf*100).toFixed(0)+'%';
+      const sub = document.getElementById(prefix+'-sub'); if(sub) sub.textContent = totals.delta || '';
+    }
+
+    /* Theme */
+    const cssVars = getComputedStyle(document.documentElement);
+    const BEE = {
+      yellow: (cssVars.getPropertyValue('--bee-yellow') || '#f8b400').trim(),
+      orange: (cssVars.getPropertyValue('--bee-orange') || '#f39c12').trim(),
+      dark:   (cssVars.getPropertyValue('--bee-dark')   || '#2c2c2c').trim()
+    };
+    const gridColor = 'rgba(0,0,0,.06)';
+    const tickColor = 'rgba(0,0,0,.55)';
+
+    Chart.defaults.font.family = "'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+    Chart.defaults.color = BEE.dark;
+    Chart.defaults.plugins.legend.display = false;
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0,0,0,.85)';
+    Chart.defaults.plugins.tooltip.padding = 10;
+    Chart.defaults.plugins.tooltip.cornerRadius = 10;
+
+    /* Chart builders */
+    function makeBar(canvasEl, labels, data){
+      if(!canvasEl) return null;
+      const c = canvasEl.getContext('2d');
+      const h = (c.canvas.clientHeight || c.canvas.height || 220);
+      const grad = c.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0,  'rgba(243,156,18,0.85)');
+      grad.addColorStop(1,  'rgba(248,180,0,0.35)');
+      return new Chart(canvasEl, {
+        type: 'bar',
+        data: { labels, datasets: [{ data, backgroundColor: grad, borderColor: BEE.orange, borderWidth: 1.5, borderRadius: 8, hoverBackgroundColor: BEE.yellow, hoverBorderColor: BEE.orange }]},
+        options: { maintainAspectRatio: true, scales: { x: { grid: { display:false }, ticks: { color: tickColor } }, y: { beginAtZero:true, ticks: { precision:0, color: tickColor }, grid: { color: gridColor } } } }
+      });
+    }
+    function makeLine(canvasEl, labels, data){
+      if(!canvasEl) return null;
+      const c = canvasEl.getContext('2d');
+      const h = (c.canvas.clientHeight || c.canvas.height || 220);
+      const grad = c.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(243,156,18,0.35)');
+      grad.addColorStop(1, 'rgba(243,156,18,0)');
+      return new Chart(canvasEl, {
+        type: 'line',
+        data: { labels, datasets: [{ data, tension:.35, borderWidth:2.5, borderColor:BEE.orange, backgroundColor:grad, pointRadius:3, pointHoverRadius:5, pointBackgroundColor:'#fff', pointBorderColor:BEE.orange, fill:true }]},
+        options: { maintainAspectRatio: true, scales: { x: { grid: { display:false }, ticks: { color: tickColor } }, y: { min:.5, max:1, ticks:{ color: tickColor, callback:v=>(v*100)+'%' }, grid:{ color: gridColor } } } }
+      });
+    }
+    function makeHBar(canvasEl, labels, data){
+      if(!canvasEl) return null;
+      const c = canvasEl.getContext('2d');
+      const w = (c.canvas.clientWidth || c.canvas.width || 480);
+      const grad = c.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0,  'rgba(243,156,18,0.85)');
+      grad.addColorStop(1,  'rgba(248,180,0,0.35)');
+      return new Chart(canvasEl, {
+        type: 'bar',
+        data: { labels, datasets: [{ data, backgroundColor: grad, borderColor: BEE.orange, borderWidth:1.5, borderRadius: 8 }]},
+        options: {
+          indexAxis: 'y',
+          maintainAspectRatio: true,
+          scales: {
+            x: { beginAtZero:true, grid:{ color:gridColor }, ticks:{ color:tickColor, precision:0 } },
+            y: { grid:{ display:false }, ticks:{ color:tickColor } }
+          }
+        }
+      });
+    }
+
+    /* Init weekly */
+    const barW = makeBar(document.getElementById('barWeekly'), weekly.labels, weekly.detects);
+    const lineW = makeLine(document.getElementById('lineWeekly'), weekly.labels, weekly.confidence);
+    const barTopSpeciesW = makeHBar(document.getElementById('barTopSpeciesW'), topSpeciesWeek.labels, topSpeciesWeek.counts);
+    const barTopPlacesW  = makeHBar(document.getElementById('barTopPlacesW'),  topPlacesWeek.labels,  topPlacesWeek.counts);
+    fillKPIs('wk', weekly.totals);
+    fillHistory('wk-history', weekly.history);
+
+    /* Init monthly */
+    const barM = makeBar(document.getElementById('barMonthly'), monthly.labels, monthly.detects);
+    const lineM = makeLine(document.getElementById('lineMonthly'), monthly.labels, monthly.confidence);
+    const barTopSpeciesM = makeHBar(document.getElementById('barTopSpeciesM'), topSpeciesMonth.labels, topSpeciesMonth.counts);
+    const barTopPlacesM  = makeHBar(document.getElementById('barTopPlacesM'),  topPlacesMonth.labels,  topPlacesMonth.counts);
+    fillKPIs('mo', monthly.totals);
+    fillHistory('mo-history', monthly.history);
+
+    /* Init all-time */
+    const barA = makeBar(document.getElementById('barAll'), alltime.labels, alltime.detects);
+    const lineA = makeLine(document.getElementById('lineAll'), alltime.labels, alltime.confidence);
+    const barTopSpecies = makeHBar(document.getElementById('barTopSpecies'), topSpeciesAll.labels, topSpeciesAll.counts);
+    const barTopPlaces  = makeHBar(document.getElementById('barTopPlaces'),  topPlacesAll.labels,  topPlacesAll.counts);
+    fillKPIs('al', alltime.totals);
+    fillHistory('al-history', alltime.history);
+
+    /* Filter (mock) */
+    document.getElementById('apiaryFilter').addEventListener('change', ()=>{
+      [barW, lineW, barM, lineM, barA, lineA, barTopSpeciesW, barTopPlacesW, barTopSpeciesM, barTopPlacesM, barTopSpecies, barTopPlaces].forEach(ch=>{
+        if(!ch) return; ch.options.animation = false; ch.update();
+      });
+    });
+  </script>
+</body>
+</html>
