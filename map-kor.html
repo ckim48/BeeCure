@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <!-- === Head === -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · 양봉장 지도</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+  <link href="static/styles.css" rel="stylesheet">
+  <style>
+    /* small helpers for previews */
+    .thumb { width: 140px; height: 90px; object-fit: cover; border-radius: 8px; }
+    .thumb-lg { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <!-- === Navbar === -->
+  <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <div class="nav-logo">
+          <img src="assets/logo_nobg.png" alt="BeeHive 로고">
+        </div>
+        <span class="brand-name">BeeCure</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="메뉴 토글">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="fordetect.html">검사</a></li>
+          <li class="nav-item"><a class="nav-link" href="map.html">지도</a></li>
+          <li class="nav-item"><a class="nav-link" href="statistics.html">통계</a></li>
+        </ul>
+
+        <!-- Auth buttons -->
+        <div class="d-flex ms-lg-3">
+          <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">로그인</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- === Page === -->
+  <main class="page">
+
+    <section class="py-2 py-md-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xl-10">
+            <div class="card-soft p-4 p-md-5">
+              <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+                <div>
+                  <h1 class="h4 fw-bold mb-1">양봉장 지도</h1>
+                  <div class="text-muted small">핀 위에 마우스를 올리면 요약 · 클릭하면 상세정보</div>
+                </div>
+                <div class="search-wrap">
+                  <input id="searchInput" type="search" class="form-control" placeholder="양봉장 이름으로 검색 (예: Sunrise, Riverside, Hilltop)" />
+                  <button id="searchBtn" class="btn-bee">검색</button>
+                  <button id="clearBtn" class="btn-ghost">초기화</button>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 small text-muted mb-2">
+                <span class="chip ok">낮은 위험</span>
+                <span class="chip bad">높은 위험</span>
+              </div>
+
+              <div id="map" class="mb-3" style="height:420px;border-radius:12px;"></div>
+
+              <div class="small text-muted">
+                데모 템플릿입니다. 데이터는 정적이며, 백엔드를 연결해 양봉장/위험 점수/점검 로그를 저장하세요.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- === Add Button === -->
+  <button class="btn-bee floating-add" data-bs-toggle="modal" data-bs-target="#addApiaryModal">+ 양봉장 추가</button>
+
+  <!-- === Detail Modal === -->
+  <div class="modal fade" id="apiaryDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="detailTitle">양봉장</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div id="detailImageWrap" class="mb-3" style="display:none;">
+            <img id="detailImage" class="thumb-lg" alt="양봉장 이미지">
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span id="detailRiskChip" class="chip ok">낮은 위험</span>
+            <span class="small text-muted" id="detailRiskNote">최근 스캔 2025-09-12</span>
+          </div>
+          <div class="small text-muted mb-2" id="detailCoords">위도, 경도</div>
+          <p class="mb-0" id="detailNotes">이 양봉장에 대한 메모.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">닫기</button>
+          <button class="btn-bee" disabled>로그 열기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Add Modal === -->
+  <div class="modal fade" id="addApiaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">양봉장 추가</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addForm" class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">이름</label>
+              <input id="fName" type="text" class="form-control" placeholder="예: Sunrise Yard" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">위도</label>
+              <input id="fLat" type="number" step="any" class="form-control" placeholder="37.5665" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">경도</label>
+              <input id="fLng" type="number" step="any" class="form-control" placeholder="126.9780" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">메모</label>
+              <textarea id="fNotes" class="form-control" rows="3" placeholder="벌통 수, 여왕 상태, 최근 점검…"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">위험도</label>
+              <select id="fRisk" class="form-select">
+                <option selected>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+
+            <!-- New image field + preview -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">이미지 (선택)</label>
+              <input id="fImage" type="file" accept="image/*" class="form-control">
+              <div id="fPreviewWrap" class="mt-2" style="display:none;">
+                <img id="fPreview" class="thumb" alt="미리보기">
+              </div>
+            </div>
+          </form>
+          <div class="small text-muted mt-2">시연용 폼이며 데이터는 저장되지 않습니다.</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" data-bs-dismiss="modal">취소</button>
+          <button id="btnSave" class="btn-bee" type="button">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Scripts === -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
+  <script>
+    // --- MAP INIT ---
+    const map = L.map('map', { scrollWheelZoom:true }).setView([37.5665,126.9780], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:19, attribution:'&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // --- DATA  ---
+    const apiaries = [
+      { name:'Sunrise Yard',   coords:[37.5796,126.9770], risk:'High',   lastScan:'2025-09-18', notes:'벌통 7개; 2개 벌통에서 위험 증가.', image:null },
+      { name:'Riverside Apiary', coords:[37.5512,126.9882], risk:'Low',  lastScan:'2025-09-12', notes:'벌통 12개; 진드기 관찰 없음.', image:null },
+      { name:'Forest Edge',    coords:[37.5123,127.0234], risk:'Medium', lastScan:'2025-09-10', notes:'벌통 9개; 약한 군집 1개.', image:null },
+      { name:'Hilltop Garden', coords:[37.5410,127.0050], risk:'Low',    lastScan:'2025-09-08', notes:'벌통 8개; 봉판 상태 양호.', image:null },
+      { name:'Urban Rooftop',  coords:[37.5662,126.9820], risk:'Medium', lastScan:'2025-09-15', notes:'벌통 5개; 먹이 저장상태 주의.', image:null }
+    ];
+
+    // --- HELPERS ---
+    const riskToKo = (risk) => risk==='High' ? '높은 위험' : (risk==='Medium' ? '보통 위험' : '낮은 위험');
+    const riskClass = (risk) => risk==='High' ? 'bad' : 'ok';
+    const riskChip = (risk) => `<span class="chip ${riskClass(risk)}">${riskToKo(risk)}</span>`;
+
+    const group = L.featureGroup().addTo(map);
+    const markers = [];
+
+    function popupHtmlFor(a){
+      const thumb = a.image ? `<div class="mt-2"><img src="${a.image}" class="thumb" alt="thumb"></div>` : '';
+      return `
+        <div class="popup-title">${a.name}</div>
+        <div class="popup-meta">${a.coords[0].toFixed(4)}, ${a.coords[1].toFixed(4)} · 최근 스캔 ${a.lastScan}</div>
+        <div class="mt-1">${riskChip(a.risk)}</div>
+        ${thumb}
+      `;
+    }
+
+    function addMarkers(data){
+      group.clearLayers();
+      markers.length = 0;
+      data.forEach(a=>{
+        const m = L.marker(a.coords);
+        m.bindPopup(popupHtmlFor(a), { closeButton:true });
+        m.on('mouseover', ()=> m.openPopup());
+        m.on('click', ()=> openDetail(a));
+        m.addTo(group);
+        markers.push({ marker:m, data:a });
+      });
+      if(data.length > 1){ map.fitBounds(group.getBounds().pad(0.2)); }
+      if(data.length === 1){ map.setView(data[0].coords, 13); }
+    }
+
+    function openDetail(a){
+      document.getElementById('detailTitle').textContent = a.name;
+      const chip = document.getElementById('detailRiskChip');
+      chip.className = 'chip ' + riskClass(a.risk);
+      chip.textContent = riskToKo(a.risk);
+      document.getElementById('detailRiskNote').textContent = '최근 스캔 ' + a.lastScan;
+      document.getElementById('detailCoords').textContent = `${a.coords[0].toFixed(5)}, ${a.coords[1].toFixed(5)}`;
+      document.getElementById('detailNotes').textContent = a.notes || '';
+
+      // image in modal
+      const imgWrap = document.getElementById('detailImageWrap');
+      const img = document.getElementById('detailImage');
+      if (a.image){
+        img.src = a.image;
+        imgWrap.style.display = '';
+      } else {
+        img.src = '';
+        imgWrap.style.display = 'none';
+      }
+
+      new bootstrap.Modal('#apiaryDetailModal').show();
+    }
+
+    function doSearch(){
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      if(!q){ addMarkers(apiaries); return; }
+      const filtered = apiaries.filter(a=> a.name.toLowerCase().includes(q));
+      addMarkers(filtered.length ? filtered : []);
+      if(filtered.length === 0){ alert('검색어와 일치하는 양봉장이 없습니다.'); }
+    }
+
+    function clearSearch(){
+      document.getElementById('searchInput').value = '';
+      addMarkers(apiaries);
+    }
+
+    // --- ADD FORM: image preview + save  ---
+    let selectedImageDataUrl = null;
+
+    document.getElementById('fImage').addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file){ selectedImageDataUrl = null; document.getElementById('fPreviewWrap').style.display = 'none'; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        selectedImageDataUrl = reader.result;
+        const prev = document.getElementById('fPreview');
+        prev.src = selectedImageDataUrl;
+        document.getElementById('fPreviewWrap').style.display = '';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('btnSave').addEventListener('click', ()=>{
+      const name = document.getElementById('fName').value.trim();
+      const lat  = parseFloat(document.getElementById('fLat').value);
+      const lng  = parseFloat(document.getElementById('fLng').value);
+      const notes = document.getElementById('fNotes').value.trim();
+      const risk  = document.getElementById('fRisk').value;
+
+      if(!name || Number.isNaN(lat) || Number.isNaN(lng)){
+        alert('이름과 좌표를 올바르게 입력하세요.');
+        return;
+      }
+
+      const today = new Date().toISOString().slice(0,10);
+      const entry = {
+        name, coords:[lat, lng], risk,
+        lastScan: today, notes, image: selectedImageDataUrl
+      };
+      apiaries.push(entry);
+      addMarkers(apiaries);
+
+      // reset form 
+      document.getElementById('addForm').reset();
+      selectedImageDataUrl = null;
+      document.getElementById('fPreviewWrap').style.display = 'none';
+
+      openDetail(entry);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addApiaryModal'));
+      modal && modal.hide();
+    });
+
+    // --- INIT ---
+    addMarkers(apiaries);
+    document.getElementById('searchBtn').addEventListener('click', doSearch);
+    document.getElementById('clearBtn').addEventListener('click', clearSearch);
+    document.getElementById('searchInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSearch(); } });
+  </script>
+</body>
+</html>

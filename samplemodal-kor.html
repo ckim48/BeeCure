@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BeeCure · 팝업</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="static/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm navbar-light bg-white">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <div class="nav-logo">
+        <img src="assets/logo_nobg.png" alt="BeeHive 로고">
+      </div>
+      <span class="brand-name">BeeCure</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="메뉴 토글">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="fordetect.html">검사</a></li>
+        <li class="nav-item"><a class="nav-link" href="map.html">지도</a></li>
+        <li class="nav-item"><a class="nav-link" href="statistics.html">통계</a></li>
+      </ul>
+      <div class="d-flex ms-lg-3">
+        <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">로그인</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <section class="py-4 py-md-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+          <div class="card-soft p-4 p-md-5">
+            <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+              <div>
+                <h1 class="h4 fw-bold mb-1">모달 컴포넌트</h1>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn-bee" data-bs-toggle="modal" data-bs-target="#modalDetectResult">“탐지 결과” 열기</button>
+              <button class="btn-ghost" data-bs-toggle="modal" data-bs-target="#modalApiaryDetail">“양봉장 상세” 열기</button>
+              <button class="btn-bee" data-bs-toggle="modal" data-bs-target="#modalAddApiary">“양봉장 추가” 열기</button>
+              <button class="btn btn-outline-danger rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#modalConfirmDelete">“삭제 확인” 열기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 탐지 결과 모달 -->
+<div class="modal fade" id="modalDetectResult" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-2xl">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">탐지 결과</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <img src="assets/sample.jpeg" alt="탐지 미리보기" class="img-fluid rounded mb-3">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="chip bad">감염 의심</span>
+          <span class="small text-muted">신뢰도 86.0%</span>
+        </div>
+        <div class="small text-muted mb-2">추정 감염 부위: 3개</div>
+        <p class="mb-0">가슴과 복부 인근에서 진드기 유사 영역이 탐지되었습니다. 설탕 롤(sugar roll) 또는 알코올 워시로 재확인 후 방제 계획을 세우는 것을 권장합니다.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="afterdetect.html" class="btn-ghost">전체 리포트 보기</a>
+        <button class="btn-bee" data-bs-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 양봉장 상세 모달 -->
+<div class="modal fade" id="modalApiaryDetail" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-2xl">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Sunrise Yard</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <img src="assets/sample.jpeg" alt="탐지 미리보기" class="img-fluid rounded mb-3">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="chip ok">낮은 위험</span>
+          <span class="small text-muted">최근 스캔 2025-10-20</span>
+        </div>
+        <div class="small text-muted mb-2">37.57960, 126.97700</div>
+        <p class="mb-0">벌통 12개. 봉판 상태 양호, 여왕벌은 봄에 마킹됨. 지난 점검에서 진드기 관찰 없음. 다음 정기 점검까지 7일 남았습니다.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="apiary-map.html" class="btn-ghost">지도에서 열기</a>
+        <button class="btn-bee" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 양봉장 추가 모달 -->
+<div class="modal fade" id="modalAddApiary" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-2xl">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">양봉장 추가</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" id="apiaryForm">
+          <div class="col-12">
+            <label class="form-label fw-semibold">이름</label>
+            <input type="text" class="form-control" placeholder="예: Riverside Apiary" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">위도</label>
+            <input type="text" class="form-control" placeholder="37.5665" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">경도</label>
+            <input type="text" class="form-control" placeholder="126.9780" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">메모</label>
+            <textarea class="form-control" rows="3" placeholder="벌통 수, 여왕 상태, 최근 점검 내용 등"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">위험도</label>
+            <select class="form-select">
+              <option selected>낮음</option>
+              <option>보통</option>
+              <option>높음</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">이미지</label>
+            <input type="file" class="form-control" id="apiaryImage" accept="image/*">
+          </div>
+          <div class="col-12">
+            <img id="apiaryPreview" class="img-fluid rounded d-none" alt="선택한 양봉장 이미지 미리보기">
+          </div>
+        </form>
+        <div class="small text-muted mt-2">이 폼은 데모용으로, 데이터가 저장되지는 않습니다.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-bs-dismiss="modal">취소</button>
+        <button class="btn-bee" id="saveApiary" disabled>저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal fade" id="modalConfirmDelete" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-2xl">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold text-danger">탐지 기록을 삭제할까요?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">이 탐지 기록을 삭제하려고 합니다. 이 작업은 되돌릴 수 없습니다.</p>
+        <ul class="small text-muted mb-0 ps-3">
+          <li>촬영 시간: 2025-10-20 14:20</li>
+          <li>양봉장: Sunrise Yard</li>
+          <li>상태: 감염 (86%)</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-bs-dismiss="modal">취소</button>
+        <button class="btn btn-danger rounded-pill fw-bold" disabled>삭제</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="text-center py-3 mt-5">
+  <small>&copy; 2025 BeeCure · 벌을 지켜 미래를 지키자</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const imgInput = document.getElementById('apiaryImage');
+  const preview = document.getElementById('apiaryPreview');
+  const saveBtn = document.getElementById('saveApiary');
+  const form = document.getElementById('apiaryForm');
+
+  imgInput.addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) {
+      preview.src = '';
+      preview.classList.add('d-none');
+      saveBtn.disabled = true;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      preview.src = ev.target.result;
+      preview.classList.remove('d-none');
+      saveBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  form.addEventListener('input', () => {
+    const required = [...form.querySelectorAll('input[required]')];
+    const allFilled = required.every(i => i.value.trim().length > 0);
+    saveBtn.disabled = !(allFilled && (imgInput.files && imgInput.files.length > 0));
+  });
+</script>
+</body>
+</html>
