@@ -38,7 +38,10 @@
           <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
           <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
         </ul>
-
+      <div class="lang-toggle ms-lg-3">
+        <button class="lang-btn active" id="btnEN">EN</button>
+        <button class="lang-btn" id="btnKR">KR</button>
+      </div>
         <!-- Auth buttons -->
         <div class="d-flex ms-lg-3">
           <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
@@ -306,5 +309,21 @@
     document.getElementById('clearBtn').addEventListener('click', clearSearch);
     document.getElementById('searchInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSearch(); } });
   </script>
+
+
+  <script>
+  const btnEN = document.getElementById('btnEN');
+  const btnKR = document.getElementById('btnKR');
+
+  btnEN.addEventListener('click', () => {
+    btnEN.classList.add('active');
+    btnKR.classList.remove('active');
+  });
+
+  btnKR.addEventListener('click', () => {
+    btnKR.classList.add('active');
+    btnEN.classList.remove('active');
+  });
+</script>
 </body>
 </html>

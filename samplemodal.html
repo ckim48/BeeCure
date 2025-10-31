@@ -15,7 +15,7 @@
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2" href="#">
       <div class="nav-logo">
-        <img src="assets/logo_nobg.png" alt="BeeHive Logo">
+        <img src="assets/sample.jpeg" alt="BeeHive Logo">
       </div>
       <span class="brand-name">BeeCure</span>
     </a>
@@ -28,6 +28,10 @@
         <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
         <li class="nav-item"><a class="nav-link" href="statistics.html">Statistics</a></li>
       </ul>
+            <div class="lang-toggle ms-lg-3">
+        <button class="lang-btn active" id="btnEN">EN</button>
+        <button class="lang-btn" id="btnKR">KR</button>
+      </div>
       <div class="d-flex ms-lg-3">
         <a class="btn btn-ghost btn-sm me-2" href="login.html" id="btnLogin">Login</a>
       </div>
@@ -91,7 +95,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img src="assets/sample.jpeg" alt="Detection preview" class="img-fluid rounded mb-3">
+        <img src="assets/apiary_thumb.jpg" alt="Apiary preview" class="img-fluid rounded mb-3">
         <div class="d-flex align-items-center gap-2 mb-2">
           <span class="chip ok">Low Risk</span>
           <span class="small text-muted">Last scan 2025-10-20</span>
@@ -207,6 +211,22 @@
     const required = [...form.querySelectorAll('input[required]')];
     const allFilled = required.every(i => i.value.trim().length > 0);
     saveBtn.disabled = !(allFilled && (imgInput.files && imgInput.files.length > 0));
+  });
+</script>
+
+
+<script>
+  const btnEN = document.getElementById('btnEN');
+  const btnKR = document.getElementById('btnKR');
+
+  btnEN.addEventListener('click', () => {
+    btnEN.classList.add('active');
+    btnKR.classList.remove('active');
+  });
+
+  btnKR.addEventListener('click', () => {
+    btnKR.classList.add('active');
+    btnEN.classList.remove('active');
   });
 </script>
 </body>
