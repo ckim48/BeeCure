@@ -192,7 +192,7 @@ footer{ background:linear-gradient(90deg,var(--bee-yellow),var(--bee-orange)); c
   border-radius:999px; padding:.9rem 1.15rem; font-size:1rem;
 }
 .search-wrap .btn-bee,
-.search-wrap .btn-ghost{ border-radius:999px; padding:.8rem 1.5rem; }
+.search-wrap .btn-ghost{ white-space: nowrap;border-radius:999px; padding:.8rem 1.5rem; }
 @media (min-width:576px){ .search-wrap .form-control{ font-size:1.05rem; } }
 @media (min-width:768px){
   .search-wrap{ max-width:760px; margin-left:auto; }
